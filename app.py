@@ -1,44 +1,40 @@
 import streamlit as st
 import requests
 import datetime
+import pandas as pd
+import numpy as np
 
 '''
 # TaxiFareModel front
 '''
 
-st.markdown('''
-Remember that there are several ways to output content into your web page...
+# Select Box
+date = st.date_input(
+    "Which day do you need a ride?",
+    datetime.date(2019, 7, 6))
 
-Either as with the title by just creating a string (or an f-string). Or as with this paragraph using the `st.` functions
-''')
 
+time = st.time_input('At what time do you need your ride?', datetime.time(8, 45))
+
+
+date_time = str(date) + " " + str(time)
+
+date_time_object = datetime.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S')
+
+
+st.write(f"The Time of arrival is the {date_time_object.date()} at {date_time_object.time()} o'clock")
 
 ## Here we would like to add some controllers in order to ask the user to select the parameters of the ride
-date_input = st.text_input("Enter the date with format yyy-mm-dd")
-time_input = st.text_input("Enter the time with format hh:mm:ss")
-date_time_input = date_input + " " + time_input
-date_time_object = datetime.datetime.strptime(date_time_input, '%Y-%m-%d %H:%M:%S')
+# date_input = st.text_input("Enter the date with format yyy-mm-dd")
+# time_input = st.text_input("Enter the time with format hh:mm:ss")
+# date_time_input = date_input + " " + time_input
+# date_time_object = datetime.datetime.strptime(date_time_input, '%Y-%m-%d %H:%M:%S')
 
 pickup_longitude = st.number_input("pickup_longitude")
 pickup_latitude = st.number_input("pickup_latitude")
 dropoff_longitude = st.number_input("dropoff_longitude")
 dropoff_latitude = st.number_input("dropoff_latitude")
 passenger_count = st.number_input("passenger_count")
-
-'''
-## Once we have these, let's call our API in order to retrieve a prediction
-
-See ? No need to load a `model.joblib` file in this app, we do not even need to know anything about Data Science in order to retrieve a prediction...
-
-🤔 How could we call our API ? Off course... The `requests` package 💡
-'''
-
-url = 'https://taxifare.lewagon.ai/predict'
-
-if url == 'https://taxifare.lewagon.ai/predict':
-
-    st.markdown('Maybe you want to use your own API for the prediction, not the one provided by Le Wagon...')
-
 
 # 2. Let's build a dictionary containing the parameters for our API...
 
@@ -70,4 +66,4 @@ else:
 prediction = response.json().get("pred", "no prediction")
 
 ## Finally, we can display the prediction to the user
-st.write(prediction)
+st.write(f"The price for your journey will be about {round(prediction, 2)} $")
